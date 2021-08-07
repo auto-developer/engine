@@ -1,0 +1,32 @@
+{
+  "name": "engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "auto": "dist/index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "tsc": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auto-developer/engine.git"
+  },
+  "author": "lossa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/auto-developer/engine/issues"
+  },
+  "homepage": "https://github.com/auto-developer/engine#readme",
+  "devDependencies": {
+    "@types/node": "^16.4.13",
+    "change-case": "^4.1.2",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "commander": "^8.1.0"
+  }
+}
