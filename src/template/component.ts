@@ -2,7 +2,7 @@ import {camelCase} from "change-case";
 
 const renderComponent = (name: string) => {
     const COMPONENT_NAME = name;
-    const TYPE_NAME = name + 'TYPE'
+    const TYPE_NAME = name + 'Type'
     const template = `import React from 'react';
 import styles from './styles.module.scss';
 

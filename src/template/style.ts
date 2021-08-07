@@ -3,7 +3,7 @@ import {camelCase} from "change-case";
 const renderStyle = (name: string) => {
     const className = camelCase(name)
     /** ---------------- sass -------------------- **/
-    const style = `.${className}{
+    const style = `.${className} {
   display: flex;
   justify-content: center;
   align-items: center;

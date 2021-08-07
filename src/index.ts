@@ -12,11 +12,10 @@ program
     .command('create', {isDefault: true})
     .description('Auto create a react component.')
     .argument('<name>', 'Component name')
-    .requiredOption('-d, --dir <dir...>', 'Directory to component.' )
+    .option('-d, --dir <dir...>', 'Directory to component.' )
+    .option('-f, --force <force>', 'Force cover exist files.' )
     .action((name, options) => {
-        console.log('create dir for component %s', options.dir);
-        console.log('create component %s', name);
-        createComponent(path.join(...options.dir), name)
+        createComponent(name, options)
     }).addHelpText('after', `
 Examples:
   $ deploy exec sequential
