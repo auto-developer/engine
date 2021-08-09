@@ -11,8 +11,9 @@
     "module": "commonjs",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "outDir": "dist"
+    "isolatedModules": false,
+    "outDir": "dist",
+    "jsx": "react"
   },
   "include": ["./src"]
 }

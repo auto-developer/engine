@@ -1,20 +1,66 @@
 import {camelCase} from "change-case";
 
-const renderComponent = (name: string) => {
+export type RouteType = {
+    path: string;
+    component: string;
+}
+export type RouterType = RouteType[]
+
+export const renderRouterComponent = (name: string, router: RouterType) => {
     const COMPONENT_NAME = name;
     const TYPE_NAME = name + 'Type'
-    const template = `import React from 'react';
+
+    const IMPORT = `import React from 'react';
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 import styles from './styles.module.scss';
+${router.map(r => `import ${r.component} from './${r.component}';`).join('\n')}`
 
-export type ${TYPE_NAME} = {
-    
+    const PROPS_TYPE = `export type ${TYPE_NAME} = {}`
+    const FUNCTION_HEAD = `function ${COMPONENT_NAME}(props: ${TYPE_NAME}) {`
+    const FUNCTION_BODY = `return <Router>
+        <Switch>
+${router.map(r => `            <Route path={'${r.path}'} strict={true} exact={true}><${r.component} /></Route>`).join('\n')}
+            <Route><Redirect to={'${router[0].path}'}/></Route>
+        </Switch>
+    </Router>`
+    const FUNCTION_FOOT = `}`
+    const EXPORT = `export default ${COMPONENT_NAME}`
+
+    const template = `${IMPORT}
+
+${PROPS_TYPE}
+
+${FUNCTION_HEAD}
+    ${FUNCTION_BODY}
+${FUNCTION_FOOT}
+
+${EXPORT}
+`
+    return template.toString()
 }
 
-function ${COMPONENT_NAME}(props: ${TYPE_NAME}) {
-    return <div className={styles.${camelCase(COMPONENT_NAME)}}>${COMPONENT_NAME}</div>
-}
+export const renderComponent = (name: string) => {
+    const COMPONENT_NAME = name;
+    const TYPE_NAME = name + 'Type'
 
-export default ${COMPONENT_NAME}
+    const IMPORT = `import React from 'react';
+import styles from './styles.module.scss';`
+
+    const PROPS_TYPE = `export type ${TYPE_NAME} = {}`
+    const FUNCTION_HEAD = `function ${COMPONENT_NAME}(props: ${TYPE_NAME}) {`
+    const FUNCTION_BODY = `return <div className={styles.${camelCase(COMPONENT_NAME)}}>${COMPONENT_NAME}</div>`
+    const FUNCTION_FOOT = `}`
+    const EXPORT = `export default ${COMPONENT_NAME}`
+
+    const template = `${IMPORT}
+
+${PROPS_TYPE}
+
+${FUNCTION_HEAD}
+    ${FUNCTION_BODY}
+${FUNCTION_FOOT}
+
+${EXPORT}
 `
     return template.toString()
 }

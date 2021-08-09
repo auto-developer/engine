@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import {Command} from 'commander';
-import * as path from 'path'
-import createComponent from "./file-creater";
+import {createComponent} from "./file-creater";
 
 const program = new Command()
     .version('0.0.1')
@@ -9,17 +8,37 @@ const program = new Command()
 
 
 program
-    .command('create', {isDefault: true})
+    .command('component', {isDefault: true})
     .description('Auto create a react component.')
     .argument('<name>', 'Component name')
     .option('-d, --dir <dir...>', 'Directory to component.' )
-    .option('-f, --force <force>', 'Force cover exist files.' )
+    .option('-f, --force [force]', 'Force cover exist files.', false )
+    .option('-c, --config [config]', 'Create from config file.' )
     .action((name, options) => {
+        console.log(options)
         createComponent(name, options)
     }).addHelpText('after', `
 Examples:
-  $ deploy exec sequential
-  $ deploy exec async`
+  $ auto create MyButton
+  $ auto create MyButton -d App
+  $ auto create MyButton -c config.json
+  $ auto create MyButton -dir App -f`
+);
+
+program
+    .command('store')
+    .description('Auto create a mobx store.')
+    .argument('<name>', 'Store name')
+    .option('-f, --force [force]', 'Force cover exist files.', false )
+    .option('-c, --config [config]', 'Create from config file.' )
+    .action((name, options) => {
+        console.log(options)
+        createComponent(name, options)
+    }).addHelpText('after', `
+Examples:
+  $ auto create UserStore
+  $ auto create UserStore -c config.json
+  $ auto create UserStore -dir App -f`
 );
 
 program.parse();
