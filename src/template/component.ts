@@ -7,41 +7,33 @@ export type RouteType = {
 export type RouterType = RouteType[]
 
 export const renderComponent = (name: string) => {
-    function makeFactorialFunction() {
-        const functionName = ts.factory.createIdentifier(name);
-        const paramName = ts.factory.createIdentifier("n");
-        const parameter = ts.factory.createParameterDeclaration(
+    function makeReactAppFunction() {
+        const statement = ts.factory.createImportDeclaration(
             /*decorators*/ undefined,
             /*modifiers*/ undefined,
-            /*dotDotDotToken*/ undefined,
-            paramName
-        );
+            ts.factory.createImportClause(false, ts.factory.createIdentifier('React'), /*namedBindings*/ undefined),
+            ts.factory.createStringLiteral('react'))
 
-        const condition = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.LessThanEqualsToken, ts.factory.createNumericLiteral(1));
-        const ifBody = ts.factory.createBlock([ts.factory.createReturnStatement(ts.factory.createNumericLiteral(1))], /*multiline*/ true);
-
-        const decrementedArg = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.MinusToken, ts.factory.createNumericLiteral(1));
-        const recurse = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.AsteriskToken, ts.factory.createCallExpression(functionName, /*typeArgs*/ undefined, [decrementedArg]));
-        const statements = [ts.factory.createIfStatement(condition, ifBody), ts.factory.createReturnStatement(recurse)];
-
-        const componentFun = ts.factory.createArrowFunction(
+        const functionName = ts.factory.createIdentifier("App")
+        const openingElement = ts.factory.createJsxOpeningElement(ts.factory.createIdentifier("Router"), [], ts.factory.createJsxAttributes([]))
+        const closingElement = ts.factory.createJsxClosingElement(ts.factory.createIdentifier("Router"))
+        const jsxElement = ts.factory.createJsxElement(openingElement, [], closingElement)
+        const returnStatement = [ts.factory.createReturnStatement(jsxElement)]
+        const makeFunction = ts.factory.createFunctionExpression(
             /*modifiers*/ undefined,
-            /*typeParameters*/ undefined,
-            [parameter],
             /*asteriskToken*/ undefined,
-            undefined,
-            ts.factory.createBlock(statements, /*multiline*/ true)
-        );
-
-        const result = ts.factory.createVariableDeclaration(functionName, undefined, undefined, componentFun)
-        return result
+            functionName,
+            /*typeParameters*/ undefined,
+            /*parameters*/ undefined,
+            /*returnType*/ undefined,
+            ts.factory.createBlock(returnStatement, /*multiline*/ true))
+        return makeFunction
         //  type: TypeNode | undefined, equalsGreaterThanToken: EqualsGreaterThanToken | undefined, body: ConciseBody): ArrowFunction;
     }
 
-
     const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed})
     const sourceFile = ts.createSourceFile("sourceFileName.ts", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
-    const result = printer.printNode(ts.EmitHint.Unspecified, makeFactorialFunction(), sourceFile)
+    const result = printer.printNode(ts.EmitHint.Unspecified, makeReactAppFunction(), sourceFile)
     return result
 }
 
