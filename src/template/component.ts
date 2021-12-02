@@ -1,4 +1,4 @@
-import {camelCase} from "change-case";
+import * as ts from "typescript";
 
 export type RouteType = {
     path: string;
@@ -6,63 +6,43 @@ export type RouteType = {
 }
 export type RouterType = RouteType[]
 
-export const renderRouterComponent = (name: string, router: RouterType) => {
-    const COMPONENT_NAME = name;
-    const TYPE_NAME = name + 'Type'
-
-    const IMPORT = `import React from 'react';
-import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
-import styles from './styles.module.scss';
-${router.map(r => `import ${r.component} from './${r.component}';`).join('\n')}`
-
-    const PROPS_TYPE = `export type ${TYPE_NAME} = {}`
-    const FUNCTION_HEAD = `function ${COMPONENT_NAME}(props: ${TYPE_NAME}) {`
-    const FUNCTION_BODY = `return <Router>
-        <Switch>
-${router.map(r => `            <Route path={'${r.path}'} strict={true} exact={true}><${r.component} /></Route>`).join('\n')}
-            <Route><Redirect to={'${router[0].path}'}/></Route>
-        </Switch>
-    </Router>`
-    const FUNCTION_FOOT = `}`
-    const EXPORT = `export default ${COMPONENT_NAME}`
-
-    const template = `${IMPORT}
-
-${PROPS_TYPE}
-
-${FUNCTION_HEAD}
-    ${FUNCTION_BODY}
-${FUNCTION_FOOT}
-
-${EXPORT}
-`
-    return template.toString()
-}
-
 export const renderComponent = (name: string) => {
-    const COMPONENT_NAME = name;
-    const TYPE_NAME = name + 'Type'
+    function makeFactorialFunction() {
+        const functionName = ts.factory.createIdentifier(name);
+        const paramName = ts.factory.createIdentifier("n");
+        const parameter = ts.factory.createParameterDeclaration(
+            /*decorators*/ undefined,
+            /*modifiers*/ undefined,
+            /*dotDotDotToken*/ undefined,
+            paramName
+        );
 
-    const IMPORT = `import React from 'react';
-import styles from './styles.module.scss';`
+        const condition = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.LessThanEqualsToken, ts.factory.createNumericLiteral(1));
+        const ifBody = ts.factory.createBlock([ts.factory.createReturnStatement(ts.factory.createNumericLiteral(1))], /*multiline*/ true);
 
-    const PROPS_TYPE = `export type ${TYPE_NAME} = {}`
-    const FUNCTION_HEAD = `function ${COMPONENT_NAME}(props: ${TYPE_NAME}) {`
-    const FUNCTION_BODY = `return <div className={styles.${camelCase(COMPONENT_NAME)}}>${COMPONENT_NAME}</div>`
-    const FUNCTION_FOOT = `}`
-    const EXPORT = `export default ${COMPONENT_NAME}`
+        const decrementedArg = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.MinusToken, ts.factory.createNumericLiteral(1));
+        const recurse = ts.factory.createBinaryExpression(paramName, ts.SyntaxKind.AsteriskToken, ts.factory.createCallExpression(functionName, /*typeArgs*/ undefined, [decrementedArg]));
+        const statements = [ts.factory.createIfStatement(condition, ifBody), ts.factory.createReturnStatement(recurse)];
 
-    const template = `${IMPORT}
+        const componentFun = ts.factory.createArrowFunction(
+            /*modifiers*/ undefined,
+            /*typeParameters*/ undefined,
+            [parameter],
+            /*asteriskToken*/ undefined,
+            undefined,
+            ts.factory.createBlock(statements, /*multiline*/ true)
+        );
 
-${PROPS_TYPE}
+        const result = ts.factory.createVariableDeclaration(functionName, undefined, undefined, componentFun)
+        return result
+        //  type: TypeNode | undefined, equalsGreaterThanToken: EqualsGreaterThanToken | undefined, body: ConciseBody): ArrowFunction;
+    }
 
-${FUNCTION_HEAD}
-    ${FUNCTION_BODY}
-${FUNCTION_FOOT}
 
-${EXPORT}
-`
-    return template.toString()
+    const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed})
+    const sourceFile = ts.createSourceFile("sourceFileName.ts", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
+    const result = printer.printNode(ts.EmitHint.Unspecified, makeFactorialFunction(), sourceFile)
+    return result
 }
 
 export default renderComponent
