@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import {ConstKeyword, ExclamationToken, ModifierFlags, NodeFlags} from "typescript";
+import {ConstKeyword, ExclamationToken, Expression, ModifierFlags, NodeFlags} from "typescript";
 
 export type RouteType = {
     path: string;
@@ -15,19 +15,31 @@ export const renderComponent = (name: string) => {
             ts.factory.createImportClause(false, ts.factory.createIdentifier('React'), undefined),
             ts.factory.createStringLiteral('react'))
 
+        const paramName = ts.factory.createIdentifier("props")
+        const parameter = ts.factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            paramName
+        )
+        /* return body */
         const div = ts.factory.createIdentifier("div")
         const openingElement = ts.factory.createJsxOpeningElement(div, [], ts.factory.createJsxAttributes([]))
         const closingElement = ts.factory.createJsxClosingElement(div)
         const jsxElement = ts.factory.createJsxElement(openingElement, [], closingElement)
         const returnStatement = [ts.factory.createReturnStatement(jsxElement)]
-        const makeFunction = ts.factory.createArrowFunction(
+
+        const makeArrowFunction = ts.factory.createArrowFunction(
             undefined,
             undefined,
-            [],
+            [parameter],
             undefined,
             undefined,
             ts.factory.createBlock(returnStatement, true))
-        const varStatement = ts.factory.createVariableDeclaration(name, undefined, ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword), makeFunction)
+        const varStatement = ts.factory.createVariableDeclaration(name,
+            undefined,
+            ts.factory.createLiteralTypeNode(ts.factory.createRegularExpressionLiteral('FC<PropsType>')),
+            makeArrowFunction)
         const result = ts.factory.createVariableStatement(
             [ts.factory.createModifier(ts.SyntaxKind.ConstKeyword)],
             [varStatement]
@@ -39,7 +51,6 @@ export const renderComponent = (name: string) => {
     const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed})
     const sourceFile = ts.createSourceFile("sourceFileName.ts", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
     const result = printer.printNode(ts.EmitHint.Unspecified, makeReactAppFunction(), sourceFile)
-    console.log(result)
     return result
 }
 
