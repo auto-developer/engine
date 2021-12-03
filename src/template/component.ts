@@ -1,6 +1,7 @@
 import {
     createPrinter,
-    createSourceFile, EmitHint,
+    createSourceFile,
+    EmitHint,
     factory,
     NewLineKind,
     ReturnStatement,
@@ -15,13 +16,12 @@ export type RouteType = {
 }
 
 const importTemplate = () => {
-    const statement = factory.createImportDeclaration(
+    return factory.createImportDeclaration(
         undefined,
         undefined,
-        factory.createImportClause(false, factory.createIdentifier('React'), undefined),
-        factory.createStringLiteral('react')
+        factory.createImportClause(false, factory.createIdentifier("React"), undefined),
+        factory.createStringLiteral("react")
     )
-    return statement
 }
 
 const componentTemplate = (): ReturnStatement => {
@@ -33,7 +33,6 @@ const componentTemplate = (): ReturnStatement => {
 }
 
 const makeReactAppFunction = (name: string) => {
-
     const paramName = factory.createIdentifier("props")
     const parameter = factory.createParameterDeclaration(
         undefined,
@@ -59,28 +58,23 @@ const makeReactAppFunction = (name: string) => {
     return result
 }
 
-const exportTemplate = () => {
-    const statement = factory.createExportDeclaration(
-        [],
-        undefined,
-        false,
-        undefined,
-        )
-    return statement
+const exportTemplate = (name: string) => {
+    return factory.createExportDefault(factory.createIdentifier(name))
+
 }
 
-const template = () => {
+const template = (name: string) => {
     return factory.createBlock([
         importTemplate(),
-        makeReactAppFunction("App"),
-        exportTemplate()
+        makeReactAppFunction(name),
+        exportTemplate(name)
     ], true)
 }
 
-export const renderComponent = (name: string) => {
+const renderComponent = (name: string) => {
     const printer = createPrinter({newLine: NewLineKind.LineFeed})
     const sourceFile = createSourceFile("sourceFileName.ts", "", ScriptTarget.Latest, false, ScriptKind.TS)
-    const result = printer.printNode(EmitHint.Unspecified, template(), sourceFile)
+    const result = printer.printNode(EmitHint.Unspecified, template(name), sourceFile)
     return result
 }
 
