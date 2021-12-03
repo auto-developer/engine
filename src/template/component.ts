@@ -45,7 +45,6 @@ export const renderComponent = (name: string) => {
             [varStatement]
         )
         return result
-        //  type: TypeNode | undefined, equalsGreaterThanToken: EqualsGreaterThanToken | undefined, body: ConciseBody): ArrowFunction;
     }
 
     const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed})
