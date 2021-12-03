@@ -47,7 +47,8 @@ const makeReactAppFunction = (name: string) => {
         undefined,
         undefined,
         factory.createBlock([componentTemplate()], true))
-    const varStatement = factory.createVariableDeclaration(name,
+    const varStatement = factory.createVariableDeclaration(
+        name,
         undefined,
         factory.createLiteralTypeNode(factory.createRegularExpressionLiteral('FC<PropsType>')),
         makeArrowFunction)
